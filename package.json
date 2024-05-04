@@ -1,0 +1,15 @@
+{
+  "name": "youtubebackend",
+  "version": "1.0.0",
+  "description": "this is youTube Like application backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "youtube",
+    "backend"
+  ],
+  "author": "parth sachan",
+  "license": "ISC"
+}
