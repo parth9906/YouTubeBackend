@@ -13,5 +13,9 @@
     "backend"
   ],
   "author": "parth sachan",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongoose": "^8.3.3"
+  }
 }
