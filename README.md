@@ -15,5 +15,9 @@
 11. Add bcrypt to encyrpt the password
 12. Add jsonwebtoken to get access and refresh token
 
+13. configure cloudinary servise for file uploads
+14. configure multer as file handling middleware 
+ 
+
 
 
