@@ -10,3 +10,10 @@
 9. Add AppError Class for error handling.
 
 
+10. For modeling of data I am refering [this link](https://app.eraser.io/workspace/WJQbjEo62445lVNP8umM?origin=share)
+
+11. Add bcrypt to encyrpt the password
+12. Add jsonwebtoken to get access and refresh token
+
+
+
