@@ -17,6 +17,11 @@
 
 13. configure cloudinary servise for file uploads
 14. configure multer as file handling middleware 
+
+15. configure multer middleware in 'api/v1/users/register' route.
+16. configure cloudinary servise in 'api/v1/users/register' route.
+17. data validation on req object both for body and files for 'api/v1/users/register' route.
+18. save the user into dataBase for 'api/v1/users/register' route.
  
 
 
