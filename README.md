@@ -22,6 +22,10 @@
 16. configure cloudinary servise in 'api/v1/users/register' route.
 17. data validation on req object both for body and files for 'api/v1/users/register' route.
 18. save the user into dataBase for 'api/v1/users/register' route.
+
+19. created an api for log in (i.e. api/v1/users/login).
+20. created an api for log out (i.e. api/v1/users/logout).
+21. created an api for refresh token (i.e. api/v1/users/refresh-token). 
  
 
 

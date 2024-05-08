@@ -45,6 +45,9 @@ const userSchema = new Schema({
             ref:'Video'
         }
     ],
+    roles:[{
+        type:String
+    }]
 
 }, { timestamps: true });
 

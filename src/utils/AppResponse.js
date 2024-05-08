@@ -2,12 +2,12 @@ class AppResponse{
     constructor(
         statusCode=200,
         data=null,
-        error=null,
+        message=null,
     ){
         this.success = statusCode < 400;
         this.statusCode = statusCode;
         this.data = data;
-        this.error = error;
+        this.message = message;
     }
 }
 
