@@ -27,6 +27,10 @@
 20. created an api for log out (i.e. api/v1/users/logout).
 21. created an api for refresh token (i.e. api/v1/users/refresh-token). 
  
+22. created an api for changing password (i.e. api/v1/users/change-user-password).
+23. created an api for changing user info(only for fullName, email and username) (i.e. api/v1/users/edit-user-info).
+24. created an api for changing avatar image (i.e. api/v1/users/edit-user-avatar).
+25. created an api for changing cover image (i.e. api/v1/users/edit-user-cover-image).
 
 
 

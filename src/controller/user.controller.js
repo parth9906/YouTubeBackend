@@ -3,7 +3,7 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 import { AppError } from '../utils/AppError.js';
 import { AppResponse } from '../utils/AppResponse.js'
 import { User } from '../models/user.models.js';
-import { uploadFileToCloudinary } from '../utils/cloudinary.js';
+import { deleteFileToCloudinary, uploadFileToCloudinary } from '../utils/cloudinary.js';
 
 const cookieOption = {
     httpOnly: true,
@@ -89,6 +89,10 @@ const loginUser = asyncHandler(async(req, res, next)=>{
     }
 
     const user = await User.findOne({$or:[{email},{username}]});
+    if(!user){
+        throw new AppError(400, 'invalid user name or password.')
+    }
+    
     const isPasswordValid = await user.isPasswordCorrect(password);
     if(!isPasswordValid){
         throw new AppError(401, "password is invalid.");
@@ -165,6 +169,122 @@ const refreshAccessToken = asyncHandler(async(req, res, next) => {
     }
 })
 
+const changePassword = asyncHandler(async(req, res, next)=>{
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const  userId  = req.user?._id;
+        const user = await User.findById(userId);
+        const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+        if(!isPasswordCorrect){
+            throw new AppError(400, "Password is incorrect.");
+        }
+        user.password = newPassword;
+        user.save({ validateBeforeSave: false})
+
+        res.status(200)
+        .json(new AppResponse(200,{}, "Password is updated successfully."))
+    } catch (error) {
+        throw new AppError(error.statusCode || 500, error.message)
+    }
+})
+
+const editUserInfo = asyncHandler(async(req, res, next)=>{
+    // here we updata all the fields except files
+    const { fullName, email, username } = req.body;
+    const userId = req.user?._id;
+    let objectTosave = {};
+
+    if(fullName !== undefined || fullName !== null){
+        objectTosave['fullName'] = fullName;
+    }
+
+    if(email !== undefined || email !== null){
+        objectTosave['email'] = email;
+    }
+
+    if(username !== undefined || username !== null){
+        objectTosave['username'] = username;
+    }
+
+    const user = await User.findByIdAndUpdate(
+        userId,
+        { $set: objectTosave },
+        { new: true }
+    )
+
+    res.status(200)
+    .json(new AppResponse(200, user, "user is updated successfully"))
+
+
+
+})
+
+const editUserAvatar = asyncHandler(async(req, res, next)=>{
+    try {
+        const fileLocalPath = req.files?.['avatar']?.[0]?.path;
+        const userId = req.user?._id;
+    
+        if(!fileLocalPath){
+            throw new AppError(400, 'Invalid filePath.');
+        }
+    
+        const cloudinaryResponse = await uploadFileToCloudinary(fileLocalPath);
+    
+        if(!cloudinaryResponse){
+            throw new AppError(500, 'Somthing went wrong while uploading resource to cloudinary.');
+        }
+    
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: { avatar: cloudinaryResponse.secure_url } },
+            //{ new: true } we want old user to get previous avatar url.
+        )
+        const userAvatar = user?.avatar;
+        const userPreviousAvatarPublicId = userAvatar?.split('/')?.splice(-1)?.[0]?.split('.')?.[0];
+    
+        await deleteFileToCloudinary(userPreviousAvatarPublicId);
+    
+        res.status(200)
+        .json(new AppResponse(200, {}, "avatar is successfully updated"));
+
+    } catch (error) {
+        throw new AppError(error?.status || 400, error?.message);
+    }
+})
+
+const editUserCoverImage = asyncHandler(async(req, res, next)=>{
+    try {
+        const fileLocalPath = req.files?.['coverImage']?.[0]?.path;
+        const userId = req.user?._id;
+    
+        if(!fileLocalPath){
+            throw new AppError(400, 'Invalid filePath.');
+        }
+    
+        const cloudinaryResponse = await uploadFileToCloudinary(fileLocalPath);
+    
+        if(!cloudinaryResponse){
+            throw new AppError(500, 'Somthing went wrong while uploading resource to cloudinary.');
+        }
+    
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: { coverImage: cloudinaryResponse.secure_url } },
+            //{ new: true } we want old user to get previous avatar url.
+        )
+        const userCoverImage = user?.coverImage;
+        const cloudinaryPublicId = userCoverImage?.split('/')?.splice(-1)?.[0]?.split('.')?.[0];
+    
+        await deleteFileToCloudinary(cloudinaryPublicId);
+    
+        res.status(200)
+        .json(new AppResponse(200, {}, "coverImage is successfully updated"));
+
+    } catch (error) {
+        throw new AppError(error?.status || 400, error?.message);
+    }
+})
+
 
 
 export { 
@@ -172,4 +292,8 @@ export {
     loginUser,
     logoutUser,
     refreshAccessToken,
+    changePassword,
+    editUserInfo,
+    editUserAvatar,
+    editUserCoverImage,
  }

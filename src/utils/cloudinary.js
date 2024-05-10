@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from 'fs'
+import { AppError } from "./AppError.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -28,4 +29,20 @@ const uploadFileToCloudinary = async (localFilePath) => {
     return null;
 };
 
-export { uploadFileToCloudinary };
+const deleteFileToCloudinary = async (resourcePublicKey) => {
+    if(!resourcePublicKey){
+        throw new AppError(500, "Resource Public key is required.");
+    }
+    try {
+        const response = await cloudinary.uploader.destroy(resourcePublicKey);
+        return response;
+    } catch (error) {
+        throw new AppError(500, "Something went wrong while removing the resouce form cloudinary.");
+    }
+    
+}
+
+export { 
+    uploadFileToCloudinary, 
+    deleteFileToCloudinary,  
+};
