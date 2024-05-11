@@ -37,6 +37,11 @@ const VideoSchema = new Schema({
     },
 },{ timestamps: true })
 
+VideoSchema.methods.increaseViewCount = function (viewsToBeIncreased = 1){
+    this.views = this.views + viewsToBeIncreased;
+    return this.save();
+}
+
 VideoSchema.plugin(aggregatePaginate);
 
 export const Video = mongoose.model('Video', VideoSchema);

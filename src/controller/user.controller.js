@@ -67,8 +67,8 @@ const registerUser = asyncHandler( async(req, res, next )=>{
             password,
             email: email?.toLowerCase(),
             fullName,
-            avatar:uploadedAvatarToCloudinary.public_id || '',
-            coverImage:uploadedCoverImageToCloudinary?.public_id || "",
+            avatar:uploadedAvatarToCloudinary.secure_url || '',
+            coverImage:uploadedCoverImageToCloudinary?.secure_url || "",
         })
         
         res.status(201).json(new AppResponse(201, { message: "User is successfully created." }));
@@ -232,16 +232,14 @@ const editUserAvatar = asyncHandler(async(req, res, next)=>{
     
         const user = await User.findByIdAndUpdate(
             userId,
-            { $set: { avatar: cloudinaryResponse.public_id } },
+            { $set: { avatar: cloudinaryResponse.secure_url } },
             //{ new: true } we want old user to get previous avatar url.
         )
-        const userAvatar = user?.avatar;
-        const userPreviousAvatarPublicId = userAvatar?.split('/')?.splice(-1)?.[0]?.split('.')?.[0];
-    
-        await deleteFileToCloudinary(userPreviousAvatarPublicId);
+        const userAvatar = user?.avatar;    
+        await deleteFileToCloudinary(userAvatar);
     
         res.status(200)
-        .json(new AppResponse(200, {}, "avatar is successfully updated"));
+        .json(new AppResponse(200, {...user, avatar:cloudinaryResponse.secure_url}, "avatar is successfully updated"));
 
     } catch (error) {
         throw new AppError(error?.status || 400, error?.message);
@@ -265,15 +263,15 @@ const editUserCoverImage = asyncHandler(async(req, res, next)=>{
     
         const user = await User.findByIdAndUpdate(
             userId,
-            { $set: { coverImage: cloudinaryResponse.public_id } },
-            //{ new: true } we want old user to get previous avatar url.
+            { $set: { coverImage: cloudinaryResponse.secure_url } },
+            // { new: true } we want old user to get previous avatar url.
         )
-        const cloudinaryPublicId = user?.coverImage;
+        const coverImage = user?.coverImage;
     
-        await deleteFileToCloudinary(cloudinaryPublicId);
+        await deleteFileToCloudinary(coverImage);
     
         res.status(200)
-        .json(new AppResponse(200, {}, "coverImage is successfully updated"));
+        .json(new AppResponse(200, {...user, coverImage: cloudinaryResponse.secure_url }, "coverImage is successfully updated"));
 
     } catch (error) {
         throw new AppError(error?.status || 400, error?.message);

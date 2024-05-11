@@ -38,6 +38,14 @@
 29. created an api for getting channle's videos (i.e. api/v1/channel/get-videos/:username).
 30. added like, comment subscription and playlist models
 
+31. created an api for post video (i.e. api/v1/video/post-video).
+32. created an api for edit video info (i.e. api/v1/video/edit-video-info).
+33. created an api for updating views (i.e. api/v1/video/increase-view-count).
+34. created an api for searching video (i.e. api/v1/video/get-videos-by-text).
+35. created an api for edit thumbnail (i.e. api/v1/video//edit-thumbnail).
+
+
+
 
 
 
