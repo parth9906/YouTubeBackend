@@ -13,10 +13,12 @@ app.use(cookieParser());
 
 // import routers here
 import userRouter from './routes/user.router.js'
+import channelProfile from './routes/channelProfile.router.js'
 
 
 
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/channel', channelProfile)
 
 
 

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Subscription } from "../models/subscription.models.js";
 import { User } from "../models/user.models.js";
 import { AppError } from "../utils/AppError.js";
@@ -16,14 +17,14 @@ const getChannelProfileData = asyncHandler(async(req, res, next)=>{
         .match({ username : username?.toLowerCase() })
         .lookup({
             from: 'subscriptions',
-            localField: '$_id',
-            foreignField: '$channel',
+            localField: '_id',
+            foreignField: 'channel',
             as: 'subscribers'
         })
         .lookup({
             from: 'subscriptions',
-            localField: '$_id',
-            foreignField: '$subscriber',
+            localField: '_id',
+            foreignField: 'subscriber',
             as: 'subscribedToChannel'
         })
         .addFields({
@@ -45,6 +46,7 @@ const getChannelProfileData = asyncHandler(async(req, res, next)=>{
             'avatar': 1,
             'coverImage': 1,
             'createdAt': 1,
+            'updatedAt': 1,
             'subscribersCount': 1,
             'subscribedTo': 1,
             'isSubscribed': 1,
@@ -64,19 +66,40 @@ const getChannelProfileData = asyncHandler(async(req, res, next)=>{
 
 const subscribedToChannel = asyncHandler(async(req, res, next)=>{
     try {
-        const {channel, subscriber } = req.body;
-        if(!channel || !subscriber){
+        const  subscriberId  = req.user?._id;
+        const { channel } = req.body;
+
+        if(!channel || !subscriberId){
             throw new AppError(400, "channel and subscriber fields are mandatory.");
         }
-        const subscription = await Subscription.findOne({ channel, subscriber })
-        if(!subscription){
-            await Subscription.create({
-                channel,
-                subscriber,
-            }).save();
+
+        const channelObj = await User.findOne({username: channel});
+        const channelId = channelObj?._id
+        if(!channelId){
+            throw new AppError(404, "channel not found");
         }
-        res.status(200)
-        .json(new AppResponse(200, 'user is subscribed successfully.'))
+
+
+        const subscription = await Subscription.findOne({
+            channel: new mongoose.Types.ObjectId(channelId),
+            subscriber: new mongoose.Types.ObjectId(subscriberId),
+        })
+
+        if(!subscription){
+            const sub = await Subscription.create({
+                channel: new mongoose.Types.ObjectId(channelId),
+                subscriber: new mongoose.Types.ObjectId(subscriberId),
+            })
+            await sub.save();
+
+            res.status(200)
+            .json(new AppResponse(200,{}, 'user is subscribed successfully.'))
+        } else{
+
+            res.status(200)
+            .json(new AppResponse(200,{}, 'user is already subscribed.'))
+        }
+
     } catch (error) {
         throw new AppError(400, error?.message);
     }
@@ -84,14 +107,34 @@ const subscribedToChannel = asyncHandler(async(req, res, next)=>{
 
 const unSubscribedToChannel = asyncHandler(async(req, res, next)=>{
     try {
-        const {channel, subscriber } = req.body;
-        if(!channel || !subscriber){
+        const  subscriberId  = req.user?._id;
+        const { channel } = req.body;
+
+        if(!channel || !subscriberId){
             throw new AppError(400, "channel and subscriber fields are mandatory.");
         }
-        await Subscription.findOneAndRemove({channel,subscriber});
+
+        const channelObj = await User.findOne({username: channel});
+
+        const channelId = channelObj?._id
+        if(!channelId){
+            throw new AppError(404, "channel not found");
+        }
+
+        const deletedSubscription = await Subscription.findOneAndDelete({
+            channel: new mongoose.Types.ObjectId(channelId),
+            subscriber: new mongoose.Types.ObjectId(subscriberId)
+        });
+
+        if(deletedSubscription){
+            res.status(200)
+            .json(new AppResponse(200, {},'user is Unsubscribed successfully.'))
+        } else {
+            res.status(200)
+            .json(new AppResponse(200, {},'user is already Unsubscribed.'))
+        }
+        
        
-        res.status(200)
-        .json(new AppResponse(200, 'user is subscribed successfully.'))
     } catch (error) {
         throw new AppError(400, error?.message);
     }
@@ -100,12 +143,14 @@ const unSubscribedToChannel = asyncHandler(async(req, res, next)=>{
 const getChannleVideos = asyncHandler(async(req, res, next)=>{
     try {
         const { username } = req.params;
+
         if(!username || !username?.trim()){
             throw new AppError(400, 'username is required')
         }
     
         const videosList = await User.aggregate()
         .match({ username })
+        .project({_id: 1})
         .lookup({
             from: 'videos',
             localField: '_id',

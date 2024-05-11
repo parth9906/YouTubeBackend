@@ -32,6 +32,13 @@
 24. created an api for changing avatar image (i.e. api/v1/users/edit-user-avatar).
 25. created an api for changing cover image (i.e. api/v1/users/edit-user-cover-image).
 
+26. created an api for getting channle info (i.e. api/v1/channel/ch/:username).
+27. created an api for getting subscribed to channle (i.e. api/v1/channel/subscribe).
+28. created an api for getting unsubscribe channle (i.e. api/v1/channel/unsubscribe).
+29. created an api for getting channle's videos (i.e. api/v1/channel/get-videos/:username).
+30. added like, comment subscription and playlist models
+
+
 
 
 
