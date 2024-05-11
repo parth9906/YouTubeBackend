@@ -28,7 +28,7 @@ const registerUser = asyncHandler( async(req, res, next )=>{
     const { username, fullName, email, password } = req.body;
     // validate that these fields are not empty or undefined
     [username, fullName, email, password].some((item)=>{
-        if(!item || item.trim() === ""){
+        if(!item || !item?.trim()){
             throw new AppError(400, 'Please fill all the mendatory field');
         }
     })
@@ -67,8 +67,8 @@ const registerUser = asyncHandler( async(req, res, next )=>{
             password,
             email: email?.toLowerCase(),
             fullName,
-            avatar:uploadedAvatarToCloudinary.secure_url,
-            coverImage:uploadedCoverImageToCloudinary?.secure_url || "",
+            avatar:uploadedAvatarToCloudinary.public_id || '',
+            coverImage:uploadedCoverImageToCloudinary?.public_id || "",
         })
         
         res.status(201).json(new AppResponse(201, { message: "User is successfully created." }));
@@ -190,20 +190,16 @@ const changePassword = asyncHandler(async(req, res, next)=>{
 
 const editUserInfo = asyncHandler(async(req, res, next)=>{
     // here we updata all the fields except files
-    const { fullName, email, username } = req.body;
+    const { fullName, email } = req.body;
     const userId = req.user?._id;
     let objectTosave = {};
 
-    if(fullName !== undefined || fullName !== null){
+    if(fullName && fullName?.trim()){
         objectTosave['fullName'] = fullName;
     }
 
-    if(email !== undefined || email !== null){
+    if(email && email?.trim()){
         objectTosave['email'] = email;
-    }
-
-    if(username !== undefined || username !== null){
-        objectTosave['username'] = username;
     }
 
     const user = await User.findByIdAndUpdate(
@@ -236,7 +232,7 @@ const editUserAvatar = asyncHandler(async(req, res, next)=>{
     
         const user = await User.findByIdAndUpdate(
             userId,
-            { $set: { avatar: cloudinaryResponse.secure_url } },
+            { $set: { avatar: cloudinaryResponse.public_id } },
             //{ new: true } we want old user to get previous avatar url.
         )
         const userAvatar = user?.avatar;
@@ -269,11 +265,10 @@ const editUserCoverImage = asyncHandler(async(req, res, next)=>{
     
         const user = await User.findByIdAndUpdate(
             userId,
-            { $set: { coverImage: cloudinaryResponse.secure_url } },
+            { $set: { coverImage: cloudinaryResponse.public_id } },
             //{ new: true } we want old user to get previous avatar url.
         )
-        const userCoverImage = user?.coverImage;
-        const cloudinaryPublicId = userCoverImage?.split('/')?.splice(-1)?.[0]?.split('.')?.[0];
+        const cloudinaryPublicId = user?.coverImage;
     
         await deleteFileToCloudinary(cloudinaryPublicId);
     
