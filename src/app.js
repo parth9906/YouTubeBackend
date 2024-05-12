@@ -15,12 +15,15 @@ app.use(cookieParser());
 import userRouter from './routes/user.router.js'
 import channelProfileRouter from './routes/channelProfile.router.js'
 import videoRouter from './routes/video.router.js'
-
-
+import commentRouter from './routes/comment.router.js'
+import lileRouter from './routes/like.router.js'
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/channel', channelProfileRouter)
 app.use('/api/v1/video', videoRouter);
+app.use('/api/v1/comment', commentRouter);
+app.use('/api/v1/like', lileRouter);
+
 
 
 

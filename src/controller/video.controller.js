@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Video } from "../models/video.models.js";
 import { AppError } from "../utils/AppError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { deleteFileToCloudinary, getPublicIdFormUrl, uploadFileToCloudinary } from "../utils/cloudinary.js";
+import { deleteFileToCloudinary, uploadFileToCloudinary } from "../utils/cloudinary.js";
 import { AppResponse } from "../utils/AppResponse.js";
 
 const postVideo = asyncHandler(async(req, res, next)=>{

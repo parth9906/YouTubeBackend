@@ -44,7 +44,14 @@
 34. created an api for searching video (i.e. api/v1/video/get-videos-by-text).
 35. created an api for edit thumbnail (i.e. api/v1/video//edit-thumbnail).
 
+36. created an api for like comment (i.e. api/v1/like/like-comment).
+37. created an api for unlike comment (i.e. api/v1/like/unlike-comment).
+38. created an api for like video (i.e. api/v1/like/like-video).
+39. created an api for unlike video (i.e. api/v1/like/unlike-video).
 
+40. created an api for post comment (i.e. api/v1/comment/post-comment).
+41. created an api for edit comment (i.e. api/v1/comment/edit-comment).
+42. created an api for delete comment (i.e. api/v1/comment/delete-comment).
 
 
 
