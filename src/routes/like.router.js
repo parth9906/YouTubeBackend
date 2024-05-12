@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { varifyToken } from "../middleware/auth.middleware";
-import { likeComment, likeVideo, unlikeComment, unlikeVideo } from "../controller/like.controller";
+import { varifyToken } from "../middleware/auth.middleware.js";
+import { likeComment, likeVideo, unlikeComment, unlikeVideo } from "../controller/like.controller.js";
 
 const router = Router();
 
